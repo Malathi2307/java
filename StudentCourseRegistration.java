@@ -116,9 +116,9 @@ public class StudentCourseRegistration {
         pst.setInt(1, id);
         int rows = pst.executeUpdate();
         if (rows > 0)
-            System.out.println("🗑️ Record deleted successfully!");
+            System.out.println("Record deleted successfully!");
         else
-            System.out.println("⚠️ Student ID not found!");
+            System.out.println("Student ID not found!");
     }
 }
 
