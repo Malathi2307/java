@@ -1,190 +1,130 @@
-import java.util.*;
+import java.util.Scanner;
 
-// Custom Exception for salary issues
-class SalaryException extends Exception {
-    public SalaryException(String message) {
+class Employee {
+    protected String name;
+    protected String employeeId;
+    protected double basicSalary;
+
+    public Employee(String name, String employeeId, double basicSalary) throws InvalidSalaryException {
+        if (basicSalary < 0) {
+            throw new InvalidSalaryException("Basic salary cannot be negative");
+        }
+        this.name = name;
+        this.employeeId = employeeId;
+        this.basicSalary = basicSalary;
+    }
+
+    public double calculateSalary() {
+        return basicSalary;
+    }
+
+    public void displaySalarySlip() {
+        System.out.println("Employee Name: " + name);
+        System.out.println("Employee ID: " + employeeId);
+        System.out.println("Basic Salary: " + basicSalary);
+    }
+}
+
+class Manager extends Employee {
+    private double allowance;
+
+    public Manager(String name, String employeeId, double basicSalary, double allowance) throws InvalidSalaryException {
+        super(name, employeeId, basicSalary);
+        if (allowance < 0) {
+            throw new InvalidSalaryException("Allowance cannot be negative");
+        }
+        this.allowance = allowance;
+    }
+
+    @Override
+    public double calculateSalary() {
+        return super.calculateSalary() + allowance;
+    }
+
+    @Override
+    public void displaySalarySlip() {
+        super.displaySalarySlip();
+        System.out.println("Allowance: " + allowance);
+        System.out.println("Total Salary: " + calculateSalary());
+    }
+}
+
+class Developer extends Employee {
+    private double bonus;
+
+    public Developer(String name, String employeeId, double basicSalary, double bonus) throws InvalidSalaryException {
+        super(name, employeeId, basicSalary);
+        if (bonus < 0) {
+            throw new InvalidSalaryException("Bonus cannot be negative");
+        }
+        this.bonus = bonus;
+    }
+
+    @Override
+    public double calculateSalary() {
+        return super.calculateSalary() + bonus;
+    }
+
+    @Override
+    public void displaySalarySlip() {
+        super.displaySalarySlip();
+        System.out.println("Bonus: " + bonus);
+        System.out.println("Total Salary: " + calculateSalary());
+    }
+}
+
+class InvalidSalaryException extends Exception {
+    public InvalidSalaryException(String message) {
         super(message);
     }
 }
 
-// Employee class
-class Employee {
-    String name;
-    int id;
-    double basic, allowance, deduction, netSalary;
-
-    public Employee(String name, int id, double basic, double allowance, double deduction) throws SalaryException {
-        if (basic < 0 || allowance < 0 || deduction < 0) {
-            throw new SalaryException("Salary components must not be negative.");
-        }
-        this.name = name;
-        this.id = id;
-        this.basic = basic;
-        this.allowance = allowance;
-        this.deduction = deduction;
-        this.netSalary = calculateNetSalary();
-    }
-
-    public double calculateNetSalary() throws SalaryException {
-        double net = basic + allowance - deduction;
-        if (net < 0) {
-            throw new SalaryException("Net salary cannot be negative.");
-        }
-        return net;
-    }
-
-    @Override
-    public String toString() {
-        return "Employee ID: " + id + ", Name: " + name + ", Net Salary: ₹" + netSalary;
-    }
-}
-
-// Make Stack generic with <T>
-interface Stack<T> extends Iterable<T> {
-    void push(T item);
-    T pop();
-    boolean isEmpty();
-    int size();
-}
-
-// Generic ArrayStack implementation
-class ArrayStack<T> implements Stack<T> {
-    private T[] stack;
-    private int top = -1;
-    private int capacity;
-
-    // Constructor to create stack with given size
-    @SuppressWarnings("unchecked")
-    public ArrayStack(int size) {
-        capacity = size;
-        stack = (T[]) new Object[size];
-    }
-
-    // Push item to stack
-    public void push(T item) {
-        if (top == capacity - 1) {
-            System.out.println("Stack Overflow! Cannot push item.");
-            return;
-        }
-        stack[++top] = item;
-    }
-
-    // Pop item from stack
-    public T pop() {
-        if (top == -1) {
-            System.out.println("Stack Underflow! No item to pop.");
-            return null;
-        }
-        return stack[top--];
-    }
-
-    // Check if stack is empty
-    public boolean isEmpty() {
-        return top == -1;
-    }
-
-    // Get number of items in stack
-    public int size() {
-        return top + 1;
-    }
-
-    // Iterator to allow for-each loop over stack
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
-            private int current = top;
-
-            public boolean hasNext() {
-                return current >= 0;
-            }
-
-            public T next() {
-                if (!hasNext()) throw new NoSuchElementException();
-                return stack[current--];
-            }
-        };
-    }
-}
-
-// Main class
 public class PayrollSystem {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        Stack<Employee> payrollHistory = new ArrayStack<>(100);  // Initialize with size 100
+        Scanner scanner = new Scanner(System.in);
 
-        while (true) {
-            System.out.println("\n1. Add Employee Payroll");
-            System.out.println("2. Undo Last Entry");
-            System.out.println("3. View Payroll History");
-            System.out.println("4. Exit");
-            System.out.print("Choose an option: ");
+        try {
+            // Input for Manager
+            System.out.println("Enter Manager details:");
+            System.out.print("Name: ");
+            String mName = scanner.nextLine();
+            System.out.print("Employee ID: ");
+            String mId = scanner.nextLine();
+            System.out.print("Basic Salary: ");
+            double mBasicSalary = scanner.nextDouble();
+            System.out.print("Allowance: ");
+            double allowance = scanner.nextDouble();
+            scanner.nextLine();  // Consume newline
 
-            int choice;
-            try {
-                choice = Integer.parseInt(sc.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                continue;
-            }
+            Manager manager = new Manager(mName, mId, mBasicSalary, allowance);
 
-            switch (choice) {
-                case 1:
-                    try {
-                        System.out.print("Enter Employee ID: ");
-                        int id = Integer.parseInt(sc.nextLine());
+            // Input for Developer
+            System.out.println("\nEnter Developer details:");
+            System.out.print("Name: ");
+            String dName = scanner.nextLine();
+            System.out.print("Employee ID: ");
+            String dId = scanner.nextLine();
+            System.out.print("Basic Salary: ");
+            double dBasicSalary = scanner.nextDouble();
+            System.out.print("Bonus: ");
+            double bonus = scanner.nextDouble();
 
-                        System.out.print("Enter Employee Name: ");
-                        String name = sc.nextLine();
+            Developer developer = new Developer(dName, dId, dBasicSalary, bonus);
 
-                        System.out.print("Enter Basic Salary: ");
-                        double basic = Double.parseDouble(sc.nextLine());
+            // Display Salary Slips
+            System.out.println("\nManager Salary Slip:");
+            manager.displaySalarySlip();
 
-                        System.out.print("Enter Allowance: ");
-                        double allowance = Double.parseDouble(sc.nextLine());
+            System.out.println("\nDeveloper Salary Slip:");
+            developer.displaySalarySlip();
 
-                        System.out.print("Enter Deduction: ");
-                        double deduction = Double.parseDouble(sc.nextLine());
-
-                        Employee emp = new Employee(name, id, basic, allowance, deduction);
-                        payrollHistory.push(emp);
-                        System.out.println("Payroll added successfully: " + emp);
-
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid number format. Please enter numeric values for salary.");
-                    } catch (SalaryException e) {
-                        System.out.println("Error in salary calculation: " + e.getMessage());
-                    } catch (Exception e) {
-                        System.out.println("Unexpected error: " + e.getMessage());
-                    }
-                    break;
-
-                case 2:
-                    if (!payrollHistory.isEmpty()) {
-                        Employee removed = payrollHistory.pop();
-                        System.out.println("Last payroll entry removed: " + removed);
-                    } else {
-                        System.out.println("No payroll entries to undo.");
-                    }
-                    break;
-
-                case 3:
-                    if (payrollHistory.isEmpty()) {
-                        System.out.println("No payroll entries found.");
-                    } else {
-                        System.out.println("Payroll History:");
-                        for (Employee e : payrollHistory) {
-                            System.out.println(e);
-                        }
-                    }
-                    break;
-
-                case 4:
-                    System.out.println("Exiting Payroll System.");
-                    sc.close();
-                    return;
-
-                default:
-                    System.out.println("Invalid option. Please choose from 1-4.");
-            }
+        } catch (InvalidSalaryException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Invalid input. Please enter correct data types.");
+        } finally {
+            scanner.close();
         }
     }
 }
+
