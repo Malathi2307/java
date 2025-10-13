@@ -50,7 +50,7 @@ public class StudentCourseRegistration {
         }
     }
 
-    // 1️⃣ Register new student
+   
     public static void registerStudent(Connection con, Scanner sc) throws SQLException {
         System.out.print("Enter Student ID: ");
         int id = sc.nextInt();
@@ -69,10 +69,10 @@ public class StudentCourseRegistration {
         pst.setString(3, course);
         pst.setString(4, sem);
         pst.executeUpdate();
-        System.out.println("✅ Registration successful!");
+        System.out.println("Registration successful!");
     }
 
-    // 2️⃣ View all registrations
+   
     public static void viewRegistrations(Connection con) throws SQLException {
         String query = "SELECT * FROM course_registration";
         Statement st = con.createStatement();
@@ -87,7 +87,7 @@ public class StudentCourseRegistration {
         }
     }
 
-    // 3️⃣ Update course registration
+    
     public static void updateRegistration(Connection con, Scanner sc) throws SQLException {
         System.out.print("Enter Student ID to update: ");
         int id = sc.nextInt();
@@ -101,12 +101,12 @@ public class StudentCourseRegistration {
         pst.setInt(2, id);
         int rows = pst.executeUpdate();
         if (rows > 0)
-            System.out.println("✅ Course updated successfully!");
+            System.out.println("Course updated successfully!");
         else
-            System.out.println("⚠️ Student ID not found!");
+            System.out.println("Student ID not found!");
     }
 
-    // 4️⃣ Delete course registration
+    
     public static void deleteRegistration(Connection con, Scanner sc) throws SQLException {
         System.out.print("Enter Student ID to delete: ");
         int id = sc.nextInt();
